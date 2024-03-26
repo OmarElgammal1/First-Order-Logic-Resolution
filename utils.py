@@ -1,4 +1,4 @@
-symbol = {'|':1, '&':2, '>':3, ',':11, '[':5, ']':6, '∀':7, '∃':8, '(':9, ')':10}
+symbol = {'~':0, '|':1, '&':2, '>':3, ',':11, '[':5, ']':6, '∀':7, '∃':8, '(':9, ')':10}
 
 # a function to get the list of variables in string list
 def variables_list(v):
@@ -31,9 +31,8 @@ def variables_list(v):
 #variables_list_test()
 
 def eliminate_implication(formulas):
-    result = []
-    for s in formulas:
-        s = s.replace(" ", "")
+    for j in range(len(formulas)):
+        s = formulas[j].replace(" ", "")
         formula = ""
         for x in range(len(s)):
             if s[x] == '>':
@@ -53,19 +52,23 @@ def eliminate_implication(formulas):
                         i -= 1
                     i += 1
                 s = s[:i] + '~' + s[i:]
-        result.append(s)
-    return result
-
-# s = ["[eat(x) > play(y)]", "[~[eat(x) ^ y] > play(y)]>"]
-# res = eliminate_implication(s)
-# for i in range(len(s)):
-#     print(s[i], " ----> ", res[i])
+        formulas[j] = s
+    return formulas
 
 def remove_double_not(formulas):
-    for f in formulas:
-        f = f.replace(" ", "")
-        f = f.replace("~~", "")  # Remove double negations
+    for i in range(len(formulas)):
+        formulas[i] = formulas[i].replace(" ", "")
+        formulas[i] = formulas[i].replace("~~", "")  # Remove double negations
     return formulas
+
+
+s = ["[eat(x) > play(y)]", "[~[eat(x) & y] > play(y, Mohsen)]>x"]
+res = eliminate_implication(s)
+res = remove_double_not(res)
+for i in range(len(s)):
+    print(s[i], " ----> ", res[i])
+
+
 
 def move_negation_inward(formulas: list[str]):
     formulas = remove_double_not(formulas)
@@ -105,7 +108,13 @@ def move_negation_inward(formulas: list[str]):
 # result = move_negation_inward(formula)
 # print(result)
 
-def standardize(formula):
+def standardize(formulas):
+    o = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    vars = variables_list(formulas)
+
+        # find a letter in o that isn't in vars
+        # replace all occurences of the variable in s with the letter
+        # if the string of the variable has a non symbol from left or right then don't replace
     None
 def Move_to_the_left(formula):
     None
