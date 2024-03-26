@@ -1,4 +1,4 @@
-symbol = {'|':1, '&':2, '>':3, ',':4, '[':5, ']':6, '(':7, ')':8, '∀':9, '∃':10}
+symbol = {'|':1, '&':2, '>':3, ',':11, '[':5, ']':6, '∀':7, '∃':8, '(':9, ')':10}
 
 # a function to get the list of variables in string list
 def variables_list(v):
@@ -30,72 +30,80 @@ def variables_list(v):
 
 #variables_list_test()
 
-def eliminate_implication(s):
-    s = s.replace(" ", "")
-    formula = ""
-    for char in s:
-        if char == '>':
-            formula += '|'
-        else:
-            formula += char
-    index = formula.index('|')
+def eliminate_implication(formulas):
+    result = []
+    for s in formulas:
+        s = s.replace(" ", "")
+        formula = ""
+        for x in range(len(s)):
+            if s[x] == '>':
+                s = s[:x] + '|' + s[x + 1:]
+                i = x - 1
+                open = 0
+                if(s[x - 1] == ']'):
+                        open += 1
+                        while(open != 0):
+                            i -= 1
+                            if(s[i] == ']'):
+                                open += 1
+                            elif(s[i] == '['):
+                                open -= 1
+                else:
+                    while(i >= 0 and not (s[i] in symbol.keys() and symbol[s[i]] < 9)):
+                        i -= 1
+                    i += 1
+                s = s[:i] + '~' + s[i:]
+        result.append(s)
+    return result
 
-    open_bracket = None
-    for i in range(index - 1, -1, -1):
-        if formula[i] == ']':
-            open_bracket = i
-        elif formula[i] == '[':
-            if open_bracket is not None:
-                formula = formula[:i] + '~' + formula[i:open_bracket] + formula[open_bracket:]
-                break  # Stop after adding '~' before the '['
-        elif formula[i] == ')':
-            open_bracket = i
-            #not completed 
-                
-    return formula
+# s = ["[eat(x) > play(y)]", "[~[eat(x) ^ y] > play(y)]>"]
+# res = eliminate_implication(s)
+# for i in range(len(s)):
+#     print(s[i], " ----> ", res[i])
 
-s = "[eat(x) > play(y)]"
-res = eliminate_implication(s)
-print(res)
+def remove_double_not(formulas):
+    for f in formulas:
+        f = f.replace(" ", "")
+        f = f.replace("~~", "")  # Remove double negations
+    return formulas
 
-def move_negation_inward(formula):
-    formula = formula.replace(" ", "")
-    formula = formula.replace("~~", "")  # Remove double negations
-    
-    while "~[" in formula:
-        start_index = formula.index("~[")
-        end_index = start_index + 2  # Start from the character after "~("
-        count = 1
-        while count != 0 and end_index < len(formula):
-            if formula[end_index] == "[":
-                count += 1
-            elif formula[end_index] == "]":
-                count -= 1
-            end_index += 1
-        # sub_formula: the formula after the negation '~[' and before the closing parenthesis ']'
-        sub_formula = formula[start_index + 2 : end_index - 1]
-        negated_sub_formula = ""
+def move_negation_inward(formulas: list[str]):
+    formulas = remove_double_not(formulas)
+    for formula in formulas:
+        while "~[" in formula:
+            start_index = formula.index("~[")
+            end_index = start_index + 2  # Start from the character after "~("
+            count = 1
+            while count != 0 and end_index < len(formula):
+                if formula[end_index] == "[":
+                    count += 1
+                elif formula[end_index] == "]":
+                    count -= 1
+                end_index += 1
+            # sub_formula: the formula after the negation '~[' and before the closing parenthesis ']'
+            sub_formula = formula[start_index + 2 : end_index - 1]
+            negated_sub_formula = ""
 
-        for char in sub_formula:
-            if char == "|":
-                negated_sub_formula += "&"
-            elif char == "&":
-                negated_sub_formula += "|"
-            elif char == "[":
-                negated_sub_formula += "~["
-            elif char == "]":
-                negated_sub_formula += "]"
-            elif char == "~":
-                negated_sub_formula += ""
-            else:
-                negated_sub_formula += "~" + char
+            for char in sub_formula:
+                if char == "|":
+                    negated_sub_formula += "&"
+                elif char == "&":
+                    negated_sub_formula += "|"
+                elif char == "[":
+                    negated_sub_formula += "~["
+                elif char == "]":
+                    negated_sub_formula += "]"
+                elif char == "~":
+                    negated_sub_formula += ""
+                else:
+                    negated_sub_formula += "~" + char
 
-        formula = formula[:start_index] + formula[end_index:]
-    return formula
+            formula = formula[:start_index] + formula[end_index:]
+    return formulas
 
-formula = "~[eat(x) | play(y)]" 
-result = move_negation_inward(formula)
-print(result)
+# formula = "~[eat(x) | play(y)]" 
+# result = move_negation_inward(formula)
+# print(result)
 
 def standardize(formula):
     None
