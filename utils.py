@@ -18,14 +18,15 @@ def variables_list(v):
             while(r < len(s) and not s[r] in symbol):
                 i += 1
                 r += 1
-            print(r)
+            #print(r)
             if(r == len(s) or s[r] != '('):
                 result.add(s[l:r])
             i += 1
     return list(result)
 
-def variables_list_test():
+"""def variables_list_test():
     v = ['a', 'Ahmed|eats(x, y)', '∃x[eats(x, y)]']
-    print(variables_list(v))
+    print(variables_list(v))"""
 
-# variables_list_test()
+#variables_list_test()
+
