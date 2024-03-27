@@ -186,3 +186,43 @@ def skolemization(formulas: list[str]):
 
 
 
+def or_distribution_recursive(s: str):
+    """Distributes OR over AND in a boolean expression recursively with parentheses."""
+    if '|' not in s:
+        return s
+
+    l, r = s.split('|', 1)
+
+    if '&' in l and '&' in r:
+        left_subparts = l.split('&')
+        right_subparts = r.split('&')
+        return '&'.join(f"[{or_distribution_recursive(f'{left_subpart}|{right_subpart}')}]" for left_subpart in left_subparts for right_subpart in right_subparts)
+    elif '&' in l:
+        subparts = l.split('&')
+        return '&'.join(f"[{or_distribution_recursive(f'{subpart}|{r}')}]" for subpart in subparts)
+    elif '&' in r:
+        subparts = r.split('&')
+        return '&'.join(f"[{or_distribution_recursive(f'{l}|{subpart}')}]" for subpart in subparts)
+
+    return s
+
+def to_cnf(formulas: list[str]) -> list[str]:
+    formulas = remove_double_not(formulas)
+    formulas = eliminate_implication(formulas)
+    formulas = move_negation_inward(formulas)
+    formulas = standardize(formulas)
+    formulas = eliminate_universal(formulas)
+    formulas = prenex(formulas)
+    formulas = skolemization(formulas)
+
+    for i in range(len(formulas)):
+        formula = formulas[i]
+        formula = formula.replace("[", "")
+        formula = formula.replace("]", "")
+        formulas[i] = or_distribution_recursive(formula)
+    return formulas
+
+# # test to_cnf function
+# s = ["P(X)&R(y)|Z(n)", "∀x[eat(x) & eat(y)]|eat(z)", "~[∃x[∃y[pass(x,y)]&fail(x,y)]"]
+# cnfs = to_cnf(s)
+# print(cnfs)
