@@ -72,7 +72,7 @@ def remove_double_not(formulas):
 
 def move_negation_inward(formulas: list[str]):
     for x in range(len(formulas)):
-        formula = formulas[x]
+        formula = formulas[x].replace(" ", "")
         sz = len(formula)
         i = 0
         open_brackets = 0
@@ -85,10 +85,8 @@ def move_negation_inward(formulas: list[str]):
                 negation_stack.append(True)
                 negation_count += 1
                 open_brackets += 1
-                i += 1  # Skip '~['
-                continue
+                sz -= 1
             elif formula[i] == '[' and i < sz - 1:  # Ensure index is within range
-                
                 negation_stack.append(False)
                 open_brackets += 1
             elif formula[i] == ']':
@@ -107,10 +105,13 @@ def move_negation_inward(formulas: list[str]):
                     formula = formula[:i] + '∀' + formula[i + 1:]
                 elif formula[i] == '∀':
                     formula = formula[:i] + '∃' + formula[i + 1:]
-                i += 1
-                sz += 1
-            elif negation_count % 2 == 1 and formula[i] not in ['']:
-                i += 1
+            elif negation_count % 2 == 1 and formula[i] not in symbol:
+                if formula[i - 1] in ['[', '&', '~', '|', ' '] and formula[i + 1] in ['(',']', '&','|', '~'] or formula[i - 2] in ['∀', '∃']:
+                    # Add negation before i
+                    formula = formula[:i] + '~' + formula[i:]
+                    sz += 1
+                    i += 1
+            i += 1
         formulas[x] = formula
     return remove_double_not(formulas)
 
