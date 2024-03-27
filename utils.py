@@ -125,45 +125,27 @@ for i in result:
 
 
 
-# helper function
-def find_closing_bracket_index(formula, open_index):
-    stack = []
-    for i, char in enumerate(formula):
-        if char == '(':
-            stack.append(i)
-        elif char == ')':
-            if stack[-1] == open_index:
-                return i
-            stack.pop()
-    return -1
+# # helper function
+# def find_closing_bracket_index(formula, open_index):
+#     stack = []
+#     for i, char in enumerate(formula):
+#         if char == '(':
+#             stack.append(i)
+#         elif char == ')':
+#             if stack[-1] == open_index:
+#                 return i
+#             stack.pop()
+#     return -1
 
-def random_var(letters):
-    available_letters = set(string.ascii_lowercase) - set(letters)
-    if available_letters:
-        return random.choice(list(available_letters))
-    else:
-        return None  # all letter are used
+# def random_var(letters):
+#     available_letters = set(string.ascii_lowercase) - set(letters)
+#     if available_letters:
+#         return random.choice(list(available_letters))
+#     else:
+#         return None  # all letter are used
     
-def Standardize(formulas: list[str]):
-    stack = []
-    formula = list(formula)  # Convert to list
-    for formula in formulas:
-        for i in range(len(formulas)):
-            if formula[i] == '(':
-                indx = find_closing_bracket_index(formula, i)
-                if indx - i == 2:
-                    val = formula[i + 1]
-                    if len(stack) == 0:
-                        stack.append(val)
-                    else:
-                        if val in stack:
-                            val = random.var(stack) #####
-                            formula[i + 1] = val
-                        else:
-                            stack.append(val)
-                    if formula[i - 3] == '∀' or formula[i - 3] == '∃':
-                        formula[i - 2] = val
-        return ''.join(formula)  # beck to string
+def standardize(formulas: list[str]):
+    return None
 s = ["[∀xeat(x) > play(y)]", "[~∀x[eat(x) & y] > play(y, Mohsen)]"]
 res = Standardize(s)
 print(s)
