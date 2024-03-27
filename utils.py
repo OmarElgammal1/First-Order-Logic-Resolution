@@ -57,18 +57,12 @@ def eliminate_implication(formulas):
         formulas[j] = s
     return formulas
 
-# s = ["[eat(x) > play(y)]", "[~[eat(x) & y] > play(y, Mohsen)]>x"]
-# res = eliminate_implication(s)
-# res = remove_double_not(res)
-# for i in range(len(s)):
-#     print(s[i], " ----> ", res[i])
 
 def remove_double_not(formulas):
     for i in range(len(formulas)):
         formulas[i] = formulas[i].replace(" ", "")
         formulas[i] = formulas[i].replace("~~", "")  # Remove double negations
     return formulas
-
 
 
 # s = ["[eat(x) > play(y)]", "[~[eat(x) & y] > play(y, Mohsen)]>x"]
@@ -142,10 +136,7 @@ def find_closing_bracket_index(formula, open_index):
     return -1
 
 
-
-
-
-def Standardize(formula):
+def standardize(formula):
     stack = []
     formula = list(formula)  # Convert to list
     for i in range(len(formula)):
@@ -165,7 +156,7 @@ def Standardize(formula):
                     formula[i - 2] = val
     return ''.join(formula)  # beck to string
 """s = '[∀xeat(x) > play(y)]'
-res = Standardize(s)
+res = standardize(s)
 print(s)"""
 
 
@@ -179,19 +170,14 @@ def eliminate_universal(formulas: list[str]):
         eliminated_formulas.append(formula)
     return eliminated_formulas
 
+
 s = ["[∀xeat(x) > play(y)]", "[~∀x[eat(x) & y] > play(y, Mohsen)]"]
 res = eliminate_universal(s)
 print(res)
 
+
 def Move_to_the_left(formulas: list[str]):
     None
-
-
-# s = ["[eat(x) > play(y)]", "[~[eat(x) & y] > play(y, Mohsen)]>x"]
-# res = eliminate_implication(s)
-# res = remove_double_not(res)
-# for i in range(len(s)):
-#     print(s[i], " ----> ", res[i])
 
 
 def Move_to_the_left(formula):
