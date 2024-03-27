@@ -110,7 +110,7 @@ def move_negation_inward(formulas: list[str]):
                 i += 1
                 sz += 1
             elif negation_count % 2 == 1 and formula[i] not in ['']:
-            i += 1
+                i += 1
         formulas[x] = formula
     return remove_double_not(formulas)
 
