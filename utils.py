@@ -1,3 +1,5 @@
+import re
+import random
 symbol = {'~':0, '|':1, '&':2, '>':3, ',':11, '[':5, ']':6, '∀':7, '∃':8, '(':9, ')':10}
 
 # a function to get the list of variables in string list
@@ -55,12 +57,18 @@ def eliminate_implication(formulas):
         formulas[j] = s
     return formulas
 
+# s = ["[eat(x) > play(y)]", "[~[eat(x) & y] > play(y, Mohsen)]>x"]
+# res = eliminate_implication(s)
+# res = remove_double_not(res)
+# for i in range(len(s)):
+#     print(s[i], " ----> ", res[i])
 
 def remove_double_not(formulas):
     for i in range(len(formulas)):
         formulas[i] = formulas[i].replace(" ", "")
         formulas[i] = formulas[i].replace("~~", "")  # Remove double negations
     return formulas
+
 
 
 # s = ["[eat(x) > play(y)]", "[~[eat(x) & y] > play(y, Mohsen)]>x"]
@@ -120,14 +128,72 @@ result = move_negation_inward(formulas)
 for i in result:
     print(i)
 
-def standardize(formulas):
-    o = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    vars = variables_list(formulas)
 
-        # find a letter in o that isn't in vars
-        # replace all occurences of the variable in s with the letter
-        # if the string of the variable has a non symbol from left or right then don't replace
+# helper function
+def find_closing_bracket_index(formula, open_index):
+    stack = []
+    for i, char in enumerate(formula):
+        if char == '(':
+            stack.append(i)
+        elif char == ')':
+            if stack[-1] == open_index:
+                return i
+            stack.pop()
+    return -1
+
+
+
+
+
+def Standardize(formula):
+    stack = []
+    formula = list(formula)  # Convert to list
+    for i in range(len(formula)):
+        if formula[i] == '(':
+            indx = find_closing_bracket_index(formula, i)
+            if indx - i == 2:
+                val = formula[i + 1]
+                if len(stack) == 0:
+                    stack.append(val)
+                else:
+                    if val in stack:
+                        val = random.choice(stack) #####
+                        formula[i + 1] = val
+                    else:
+                        stack.append(val)
+                if formula[i - 3] == '∀' or formula[i - 3] == '∃':
+                    formula[i - 2] = val
+    return ''.join(formula)  # beck to string
+"""s = '[∀xeat(x) > play(y)]'
+res = Standardize(s)
+print(s)"""
+
+
+def eliminate_universal(formulas: list[str]):
+    eliminated_formulas = []
+    for formula in formulas:
+        formula = formula.replace(" ", "")
+
+        # Find quantifier and replace quantifier with ''
+        formula = re.sub(r'∀\s*[a-z]', '', formula)
+        eliminated_formulas.append(formula)
+    return eliminated_formulas
+
+s = ["[∀xeat(x) > play(y)]", "[~∀x[eat(x) & y] > play(y, Mohsen)]"]
+res = eliminate_universal(s)
+print(res)
+
+def Move_to_the_left(formulas: list[str]):
     None
+
+
+# s = ["[eat(x) > play(y)]", "[~[eat(x) & y] > play(y, Mohsen)]>x"]
+# res = eliminate_implication(s)
+# res = remove_double_not(res)
+# for i in range(len(s)):
+#     print(s[i], " ----> ", res[i])
+
+
 def Move_to_the_left(formula):
     None
 
