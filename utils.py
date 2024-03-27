@@ -159,3 +159,30 @@ def prenex(formulas: list[str]):
 # res = prenex(s)
 # print(res)
 
+def skolemization(formulas: list[str]):
+    o = "ABCDEFGHIJKLMNOP"
+    vars = variables_list(formulas)
+    i = 0
+    new = []
+    for i in range(len(formulas)):
+        formula = formulas[i]
+        c = 'a'
+        sz = len(formula)
+        j = 0
+        while j < sz:
+            while i < 29 and o[i] in vars:
+                i += 1
+            c = o[i]
+            if formula[j] == '∃':
+                sz -= 2
+                # use regex to replace each variable that doesn't have '(' afterwards
+                formula = re.sub(r'\b' + formula[j] + r'\b(?!\()', c, formula)
+                new.append(c)
+                # remove the existential symbol and the character after (j and j + 1)
+                formula = formula[:j] + formula[j + 1:]
+            j += 1
+        formulas[i] = formula
+    return formulas
+
+
+
