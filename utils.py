@@ -152,3 +152,6 @@ def prenex(formulas: list[str]):
 s = ["[∀xeat(x) > ∃yplay(y)]", "[~∀x[eat(x) & y] > ∀yplay(y, Mohsen)]"] # ["[∀x∃yeat(x) > play(y)]", "[~∀x∀y[eat(x) & y] > play(y, Mohsen)]"]
 res = prenex(s)
 print(res)
+
+def Skolemization(formulas: list[str]):
+    None
