@@ -1,5 +1,6 @@
 import re
 import random
+import string
 symbol = {'~':0, '|':1, '&':2, '>':3, ',':11, '[':5, ']':6, '∀':7, '∃':8, '(':9, ')':10}
 
 # a function to get the list of variables in string list
@@ -123,6 +124,7 @@ for i in result:
     print(i)
 
 
+
 # helper function
 def find_closing_bracket_index(formula, open_index):
     stack = []
@@ -135,29 +137,36 @@ def find_closing_bracket_index(formula, open_index):
             stack.pop()
     return -1
 
-
-def standardize(formula):
+def random_var(letters):
+    available_letters = set(string.ascii_lowercase) - set(letters)
+    if available_letters:
+        return random.choice(list(available_letters))
+    else:
+        return None  # all letter are used
+    
+def Standardize(formulas: list[str]):
     stack = []
     formula = list(formula)  # Convert to list
-    for i in range(len(formula)):
-        if formula[i] == '(':
-            indx = find_closing_bracket_index(formula, i)
-            if indx - i == 2:
-                val = formula[i + 1]
-                if len(stack) == 0:
-                    stack.append(val)
-                else:
-                    if val in stack:
-                        val = random.choice(stack) #####
-                        formula[i + 1] = val
-                    else:
+    for formula in formulas:
+        for i in range(len(formulas)):
+            if formula[i] == '(':
+                indx = find_closing_bracket_index(formula, i)
+                if indx - i == 2:
+                    val = formula[i + 1]
+                    if len(stack) == 0:
                         stack.append(val)
-                if formula[i - 3] == '∀' or formula[i - 3] == '∃':
-                    formula[i - 2] = val
-    return ''.join(formula)  # beck to string
-"""s = '[∀xeat(x) > play(y)]'
-res = standardize(s)
-print(s)"""
+                    else:
+                        if val in stack:
+                            val = random.var(stack) #####
+                            formula[i + 1] = val
+                        else:
+                            stack.append(val)
+                    if formula[i - 3] == '∀' or formula[i - 3] == '∃':
+                        formula[i - 2] = val
+        return ''.join(formula)  # beck to string
+s = ["[∀xeat(x) > play(y)]", "[~∀x[eat(x) & y] > play(y, Mohsen)]"]
+res = Standardize(s)
+print(s)
 
 
 def eliminate_universal(formulas: list[str]):
@@ -175,11 +184,4 @@ s = ["[∀xeat(x) > play(y)]", "[~∀x[eat(x) & y] > play(y, Mohsen)]"]
 res = eliminate_universal(s)
 print(res)
 
-
-def Move_to_the_left(formulas: list[str]):
-    None
-
-
-def Move_to_the_left(formula):
-    None
 
