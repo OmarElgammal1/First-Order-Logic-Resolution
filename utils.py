@@ -1,37 +1,7 @@
 import re
-import random
-import string
+from helper import *
+
 symbol = {'~':0, '|':1, '&':2, '>':3, ',':11, '[':5, ']':6, '∀':7, '∃':8, '(':9, ')':10}
-
-# a function to get the list of variables in string list
-def variables_list(v):
-    result = set()
-    # for each string if there is a variable append it in result
-    for s in v:
-        s = s.replace(' ', '')
-        l = 0
-        r = 0
-        i = 0
-        while i < len(s):
-            if s[i] in symbol:
-                i += 1
-                continue
-            l = i
-            r = i
-            while(r < len(s) and not s[r] in symbol):
-                i += 1
-                r += 1
-            #print(r)
-            if(r == len(s) or s[r] != '('):
-                result.add(s[l:r])
-            i += 1
-    return list(result)
-
-"""def variables_list_test():
-    v = ['a', 'Ahmed|eats(x, y)', 'x[eats(x, y)]']
-    print(variables_list(v))"""
-
-#variables_list_test()
 
 def eliminate_implication(formulas):
     for j in range(len(formulas)):
@@ -118,57 +88,35 @@ def move_negation_inward(formulas: list[str]):
         formulas[x] = formula
     return remove_double_not(formulas)
 
-formulas = ["~[P & ~Q]", "~[P | ~Q]", "~[∃x P(x)]", "~[∀x P(x)]"]
-result = move_negation_inward(formulas)
-for i in result:
-    print(i)
+# formulas = ["~[P & ~Q]", "~[P | ~Q]", "~[∃x P(x)]", "~[∀x P(x)]"]
+# result = move_negation_inward(formulas)
+# for i in result:
+#     print(i)
 
+def standardize(formulas: list[str]):
+    o = "abcdefghijklmnopqrstuvwxyz"
+    # replaces each variable lowercase one letter with a letter that doesn't exist in variable list of the formulas
+    vars = variables_list(formulas)
+    i = 0
+    new = []
+    for i in range(len(formulas)):
+        formula = formulas[i]
+        c = 'a'
+        for j in range(len(formula)):
+            while i < 29 and o[i] in vars:
+                i += 1
+            c = o[i]
+            if formula[j] in o and formula[j] in vars:
+                # use regex to replace each variable that doesn't have '(' afterwards
+                formula = re.sub(r'\b' + formula[j] + r'\b(?!\()', c, formula)
+                new.append(c)
+        formulas[i] = formula
+    return formulas
 
-
-# helper function
-def find_closing_bracket_index(formula, open_index):
-    stack = []
-    for i, char in enumerate(formula):
-        if char == '(':
-            stack.append(i)
-        elif char == ')':
-            if stack[-1] == open_index:
-                return i
-            stack.pop()
-    return -1
-
-def random_var(letters):
-    available_letters = set(string.ascii_lowercase) - set(letters)
-    if available_letters:
-        return random.choice(list(available_letters))
-    else:
-        return None  # all letter are used
-    
-def Standardize(formulas: list[str]):
-    stack = []
-    formula = list(formula)  # Convert to list
-    for formula in formulas:
-        for i in range(len(formulas)):
-            if formula[i] == '(':
-                indx = find_closing_bracket_index(formula, i)
-                if indx - i == 2:
-                    val = formula[i + 1]
-                    if len(stack) == 0:
-                        stack.append(val)
-                    else:
-                        if val in stack:
-                            val = random.var(stack) #####
-                            formula[i + 1] = val
-                        else:
-                            stack.append(val)
-                    if formula[i - 3] == '∀' or formula[i - 3] == '∃':
-                        formula[i - 2] = val
-        return ''.join(formula)  # beck to string
 s = ["[∀xeat(x) > play(y)]", "[~∀x[eat(x) & y] > play(y, Mohsen)]"]
-res = Standardize(s)
+res = standardize(s)
 print(s)
-
-
+    
 def eliminate_universal(formulas: list[str]):
     eliminated_formulas = []
     for formula in formulas:
@@ -180,8 +128,27 @@ def eliminate_universal(formulas: list[str]):
     return eliminated_formulas
 
 
-s = ["[∀xeat(x) > play(y)]", "[~∀x[eat(x) & y] > play(y, Mohsen)]"]
-res = eliminate_universal(s)
+# s = ["[∀xeat(x) > play(y)]", "[~∀x[eat(x) & y] > play(y, Mohsen)]"]
+# res = eliminate_universal(s)
+# print(res)
+
+def prenex(formulas: list[str]):
+    new_formulas = []
+
+    for formula in formulas:
+        quantifier = ""
+        formula_list = list(formula)  # Convert formula to list of characters
+        i = 0
+        while i < len(formula_list):
+            if formula_list[i] in {'∀', '∃'}:
+                if i + 1 < len(formula_list) and formula_list[i + 1].isalpha():
+                    quantifier += ''.join(formula_list[i:i + 2]) 
+                    del formula_list[i:i + 2]  
+            i += 1
+        new_formulas.append(quantifier + ''.join(formula_list))  # Join formula list back to string and append to new_formulas
+
+    return new_formulas
+
+s = ["[∀xeat(x) > ∃yplay(y)]", "[~∀x[eat(x) & y] > ∀yplay(y, Mohsen)]"] # ["[∀x∃yeat(x) > play(y)]", "[~∀x∀y[eat(x) & y] > play(y, Mohsen)]"]
+res = prenex(s)
 print(res)
-
-
