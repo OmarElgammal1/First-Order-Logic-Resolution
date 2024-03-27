@@ -25,6 +25,12 @@ def eliminate_implication(formulas):
                         i -= 1
                     i += 1
                 s = s[:i] + '~' + s[i:]
+        #loop to swap '∃~x' into '∃x~'
+        for x in range(len(s)):
+            if (s[x] == '∃' or s[x] == '∀') and s[x + 1] == '~':
+                i = x + 1
+                # swap character located at i with i + 1
+                s = s[:i] + s[i + 1] + s[i] + s[i + 2:]
         formulas[j] = s
     return formulas
 
@@ -113,9 +119,9 @@ def standardize(formulas: list[str]):
         formulas[i] = formula
     return formulas
 
-s = ["[∀xeat(x) > play(y)]", "[~∀x[eat(x) & y] > play(y, Mohsen)]"]
-res = standardize(s)
-print(s)
+# s = ["[∀xeat(x) > play(y)]", "[~∀x[eat(x) & y] > play(y, Mohsen)]"]
+# res = standardize(s)
+# print(s)
     
 def eliminate_universal(formulas: list[str]):
     eliminated_formulas = []
@@ -149,9 +155,7 @@ def prenex(formulas: list[str]):
 
     return new_formulas
 
-s = ["[∀xeat(x) > ∃yplay(y)]", "[~∀x[eat(x) & y] > ∀yplay(y, Mohsen)]"] # ["[∀x∃yeat(x) > play(y)]", "[~∀x∀y[eat(x) & y] > play(y, Mohsen)]"]
-res = prenex(s)
-print(res)
+# s = ["[∀xeat(x) > ∃yplay(y)]", "[~∀x[eat(x) & y] > ∀yplay(y, Mohsen)]"] # ["[∀x∃yeat(x) > play(y)]", "[~∀x∀y[eat(x) & y] > play(y, Mohsen)]"]
+# res = prenex(s)
+# print(res)
 
-def Skolemization(formulas: list[str]):
-    None
